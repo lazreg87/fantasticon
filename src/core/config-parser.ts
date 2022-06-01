@@ -1,16 +1,16 @@
-import { RunnerOptions } from '../types/runner';
 import { DEFAULT_OPTIONS } from '../constants';
-import {
-  parseDir,
-  parseString,
-  parseBoolean,
-  parseFunction,
-  listMembersParser,
-  parseNumeric,
-  optional,
-  nullable
-} from '../utils/validation';
 import { FontAssetType, OtherAssetType } from '../types/misc';
+import { RunnerOptions } from '../types/runner';
+import {
+  listMembersParser,
+  nullable,
+  optional,
+  parseBoolean,
+  parseDir,
+  parseFunction,
+  parseNumeric,
+  parseString
+} from '../utils/validation';
 
 const CONFIG_VALIDATORS: {
   [key in keyof RunnerOptions]: Array<(val: any, cur: any) => any>;
@@ -32,7 +32,8 @@ const CONFIG_VALIDATORS: {
   tag: [parseString],
   prefix: [parseString],
   fontsUrl: [optional(parseString)],
-  getIconId: [optional(parseFunction)]
+  getIconId: [optional(parseFunction)],
+  hashInFileName: [optional(parseBoolean)]
 };
 
 export const parseConfig = async (input: object = {}) => {

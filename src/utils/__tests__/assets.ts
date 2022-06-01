@@ -1,7 +1,8 @@
-import { loadPaths, loadAssets, writeAssets } from '../assets';
-import { GetIconIdFn } from '../../types/misc';
 import { DEFAULT_OPTIONS } from '../../constants';
+import { GetIconIdFn } from '../../types/misc';
+import { loadAssets, loadPaths, writeAssets } from '../assets';
 import { writeFile } from '../fs-async';
+import * as hashUtils from '../hash';
 
 const writeFileMock = writeFile as any as jest.Mock;
 
@@ -10,6 +11,11 @@ jest.mock('glob');
 jest.mock('../../utils/fs-async', () => ({
   writeFile: jest.fn(() => Promise.resolve())
 }));
+const getHash = jest
+  .spyOn(hashUtils, 'getHash')
+  .mockImplementation(
+    (...values: string[]) => `::hashed(${values.join('|')})::`
+  );
 
 describe('Assets utilities', () => {
   beforeEach(() => {
@@ -160,6 +166,9 @@ describe('Assets utilities', () => {
   });
 
   describe('writeAssets', () => {
+    beforeEach(() => {
+      getHash.mockClear();
+    });
     it('calls `fs.writeFile` for each given asset with correctly formed filepath and content', async () => {
       await writeAssets(
         { svg: '::svg-content::', foo: '::foo-content::' } as any,
@@ -218,6 +227,28 @@ describe('Assets utilities', () => {
       ).toEqual([
         { writePath: '/dev/null/base-name.svg', content: '::svg-content::' },
         { writePath: 'custom-path/to-file.ts', content: '::foo-content::' }
+      ]);
+    });
+
+    it('adds hash to filename if `hashInFileName` option is provided', async () => {
+      expect(
+        await writeAssets(
+          { svg: '::svg-content::', foo: '::foo-content::' } as any,
+          {
+            name: 'base-name',
+            outputDir: '/dev/null',
+            hashInFileName: true
+          } as any
+        )
+      ).toEqual([
+        {
+          writePath: '/dev/null/base-name.::hashed(::svg-content::)::.svg',
+          content: '::svg-content::'
+        },
+        {
+          writePath: '/dev/null/base-name.::hashed(::foo-content::)::.foo',
+          content: '::foo-content::'
+        }
       ]);
     });
   });

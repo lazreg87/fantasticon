@@ -1,9 +1,9 @@
 import commander from 'commander';
-import { FontAssetType, OtherAssetType } from '../types/misc';
-import { loadConfig, DEFAULT_FILEPATHS } from './config-loader';
 import { DEFAULT_OPTIONS } from '../constants';
 import { generateFonts } from '../core/runner';
+import { FontAssetType, OtherAssetType } from '../types/misc';
 import { removeUndefined } from '../utils/validation';
+import { DEFAULT_FILEPATHS, loadConfig } from './config-loader';
 import { getLogger } from './logger';
 
 const {
@@ -126,6 +126,11 @@ const config = () => {
       'public URL to the fonts directory (used in the generated CSS)'
     )
 
+    .option(
+      '-h, --hash-in-filename <value>',
+      'Include the hash in the filename instead of as a queryparam'
+    )
+
     .option('--debug', 'display errors stack trace' + printDefaultValue(false))
 
     .option('--silent', 'run with no logs' + printDefaultValue(false));
@@ -150,7 +155,8 @@ const buildOptions = async (cmd: commander.Command, loadedConfig = {}) => {
       selector: opts.selector,
       tag: opts.tag,
       prefix: opts.prefix,
-      fontsUrl: opts.fontsUrl
+      fontsUrl: opts.fontsUrl,
+      hashInFilename: opts.hashInFilename
     })
   };
 };

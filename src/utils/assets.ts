@@ -1,10 +1,11 @@
 import glob from 'glob';
+import { join, relative, resolve } from 'path';
 import { promisify } from 'util';
-import { resolve, relative, join } from 'path';
+import { GeneratedAssets } from '../generators/generate-assets';
+import { RunnerOptions } from '../types/runner';
 import { removeExtension, splitSegments } from '../utils/path';
 import { writeFile } from './fs-async';
-import { RunnerOptions } from '../types/runner';
-import { GeneratedAssets } from '../generators/generate-assets';
+import { getHash } from './hash';
 
 export type WriteResult = { content: string | Buffer; writePath: string };
 
@@ -81,12 +82,16 @@ export const loadAssets = async ({
 
 export const writeAssets = async (
   assets: GeneratedAssets,
-  { name, pathOptions = {}, outputDir }: RunnerOptions
+  { name, pathOptions = {}, outputDir, hashInFileName = false }: RunnerOptions
 ) => {
   const results: WriteResults = [];
 
   for (const ext of Object.keys(assets)) {
-    const filename = [name, ext].join('.');
+    let filename = [name, ext].join('.');
+    if (hashInFileName) {
+      const hash = getHash(assets[ext].toString('utf8'));
+      filename = [name, hash, ext].join('.');
+    }
     const writePath = pathOptions[ext] || join(outputDir, filename);
     results.push({ content: assets[ext], writePath });
     await writeFile(writePath, assets[ext]);

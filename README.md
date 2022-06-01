@@ -55,6 +55,7 @@ Options:
   -p, --prefix <value>         CSS class prefix (default: icon)
   --tag <value>                CSS base tag for icons (default: i)
   -u, --fonts-url <value>      public URL to the fonts directory (used in the generated CSS)
+  --hash-in-filename           include the hash in the filename instead of as a queryparam (default: false)
   --debug                      display errors stack trace (default: false)
   --silent                     run with no logs (default: false)
   --help                       display help for command
@@ -83,6 +84,7 @@ module.exports = {
   fontTypes: ['ttf', 'woff', 'woff2'],
   assetTypes: ['ts', 'css', 'json', 'html'],
   fontsUrl: '/static/fonts',
+  hashInFileName: false,
   formatOptions: {
     // Pass options directly to `svgicons2svgfont`
     woff: {
@@ -160,7 +162,8 @@ generateFonts({
   selector: null,
   tag: 'i',
   prefix: 'icon',
-  fontsUrl: null
+  fontsUrl: null,
+  hashInFileName: false
 }).then(results => console.log(results));
 ```
 

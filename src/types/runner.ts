@@ -1,6 +1,6 @@
 import { CodepointsMap } from '../utils/codepoints';
-import { FontAssetType, OtherAssetType, AssetType, GetIconIdFn } from './misc';
 import { FormatOptions } from './format';
+import { AssetType, FontAssetType, GetIconIdFn, OtherAssetType } from './misc';
 
 export interface RunnerMandatoryOptions {
   inputDir: string;
@@ -24,6 +24,7 @@ export type RunnerOptionalOptions = {
   prefix: string;
   fontsUrl: string;
   getIconId: GetIconIdFn;
+  hashInFileName: boolean;
 };
 
 export type RunnerOptionsInput = RunnerMandatoryOptions &

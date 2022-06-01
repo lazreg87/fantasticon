@@ -1,5 +1,5 @@
-import { renderSrcAttribute } from '../css';
 import { FontAssetType } from '../../types/misc';
+import { renderSrcAttribute } from '../css';
 import * as hashUtils from '../hash';
 
 jest.mock('path');
@@ -72,6 +72,18 @@ describe('CSS utilities', () => {
 
       expect(renderSrcAttribute(options as any, font)).toEqual(
         'url("https://my-static.com/my-font.ttf?::hashed(::font-content::)::") format("truetype")'
+      );
+    });
+    it('moves the hash into the filename if `hashInFileName` option is set', () => {
+      const font = '::font-content::';
+      const options = {
+        fontTypes: [FontAssetType.TTF],
+        name: 'my-font',
+        hashInFileName: true
+      };
+
+      expect(renderSrcAttribute(options as any, font)).toEqual(
+        'url("./my-font.::hashed(::font-content::)::.ttf") format("truetype")'
       );
     });
   });

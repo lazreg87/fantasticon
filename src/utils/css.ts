@@ -1,6 +1,6 @@
 import { FontGeneratorOptions } from '../types/generator';
-import { getHash } from './hash';
 import { FontAssetType } from '../types/misc';
+import { getHash } from './hash';
 
 interface RenderSrcOptions {
   formatValue: string;
@@ -19,7 +19,7 @@ const renderSrcOptions: { [key in FontAssetType]: RenderSrcOptions } = {
 };
 
 export const renderSrcAttribute = (
-  { name, fontTypes, fontsUrl }: FontGeneratorOptions,
+  { name, fontTypes, fontsUrl, hashInFileName }: FontGeneratorOptions,
   font: string | Buffer
 ) =>
   fontTypes
@@ -27,6 +27,14 @@ export const renderSrcAttribute = (
       const { formatValue, getSuffix } = renderSrcOptions[fontType];
       const hash = getHash(font.toString('utf8'));
       const suffix = getSuffix ? getSuffix(name) : '';
+
+      if (hashInFileName) {
+        const queryparam = suffix ? `?${suffix}` : '';
+        return `url("${
+          fontsUrl || '.'
+        }/${name}.${hash}.${fontType}${queryparam}") format("${formatValue}")`;
+      }
+
       return `url("${
         fontsUrl || '.'
       }/${name}.${fontType}?${hash}${suffix}") format("${formatValue}")`;
